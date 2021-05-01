@@ -157,12 +157,53 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     def getAction(self, gameState):
         """
         Returns the expectimax action using self.depth and self.evaluationFunction
-
         All ghosts should be modeled as choosing uniformly at random from their
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        numOfAgent = gameState.getNumAgents()
+        # For each possible direction, add its prediction score to this array
+        ActionScore = []
+
+        def expectimax(currentState, treeDeep):
+          # Some special case (leaf of the tree, already won or loss)
+          if treeDeep >= self.depth*numOfAgent or currentState.isWin() or currentState.isLose():
+            ans = self.evaluationFunction(currentState)
+            return ans
+
+          # Pacman Max  
+          if treeDeep%numOfAgent == 0: 
+            # In case there are no legal actions for Pacman, return -1e4 (losing state)
+            result = -1e4
+
+            # Else, find the way with the maximum possible score
+            for a in currentState.getLegalActions(treeDeep%numOfAgent):
+              # Stop is always not a good choice
+              if a == 'Stop':
+                continue
+              # Generate next Game State
+              sdot = currentState.generateSuccessor(treeDeep%numOfAgent,a)
+              # Recursive
+              result = max(result, expectimax(sdot, treeDeep+1))
+              # Score of each branch of the first node
+              if treeDeep == 0:
+                ActionScore.append(result)
+            
+            return result
+
+          # Random move of a ghost
+          else:
+            # An array of Score with each possible Ghost's direction
+            successorScore = [expectimax(currentState.generateSuccessor(treeDeep%numOfAgent,a), treeDeep+1) for a in currentState.getLegalActions(treeDeep%numOfAgent)]
+
+            # The average (or expected) score of the array above
+            return sum([ float(x)/len(successorScore) for x in successorScore])
+
+        result = expectimax(gameState, 0)
+        # [x for x in gameState.getLegalActions(0) if x != 'Stop']: Array of direction (Left, Right, Up, Down)
+        # [ActionScore.index(max(ActionScore))]                   : Index with the corresponding highest score 
+        return [x for x in gameState.getLegalActions(0) if x != 'Stop'][ActionScore.index(max(ActionScore))]
 
 def betterEvaluationFunction(currentGameState):
     """
