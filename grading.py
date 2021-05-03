@@ -77,8 +77,7 @@ class Grades:
             if self.mute:
                 util.mutePrint()
             try:
-                util.TimeoutFunction(getattr(gradingModule, q), 1800)(
-                    self)  # Call the question's function
+                util.TimeoutFunction(getattr(gradingModule, q), 1800)(self)  # Call the question's function
                 # TimeoutFunction(getattr(gradingModule, q),1200)(self) # Call the question's function
             except Exception as inst:
                 self.addExceptionMessage(q, inst, traceback)
@@ -243,7 +242,7 @@ to follow your instructor's guidelines to receive credit on your project.
             checkOrX = '<span class="incorrect"/>'
             if (self.points[q] >= self.maxes[q]):
                 checkOrX = '<span class="correct"/>'
-            #messages = '\n<br/>\n'.join(self.messages[q])
+            # messages = '\n<br/>\n'.join(self.messages[q])
             messages = "<pre>%s</pre>" % '\n'.join(self.messages[q])
             output = """
         <div class="test">
@@ -293,7 +292,7 @@ to follow your instructor's guidelines to receive credit on your project.
 
     def addMessage(self, message, raw=False):
         if not raw:
-                # We assume raw messages, formatted for HTML, are printed separately
+            # We assume raw messages, formatted for HTML, are printed separately
             if self.mute:
                 util.unmutePrint()
             print('*** ' + message)
